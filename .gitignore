@@ -130,3 +130,6 @@ dmypy.json
 
 # editor
 .idea/
+
+# generated
+.src/generated/
