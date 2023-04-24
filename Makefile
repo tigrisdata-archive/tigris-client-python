@@ -1,9 +1,9 @@
 PROTO_PATH=./api/proto
 PROTO_FILE_PATH=${PROTO_PATH}/server/v1
-GENERATED_DIR=./src/generated/
+GENERATED_DIR=./generated-src/
 
 clean:
-	rm -rf ./src/generated/
+	rm -rf ${GENERATED_DIR}
 
 generate:
 	mkdir -p ${GENERATED_DIR}

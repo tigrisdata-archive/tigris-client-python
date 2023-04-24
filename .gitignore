@@ -132,4 +132,4 @@ dmypy.json
 .idea/
 
 # generated
-.src/generated/
+.generated-src/
