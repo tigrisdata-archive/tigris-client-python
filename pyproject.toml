@@ -3,14 +3,24 @@ name = "tigris"
 version = "0.1.0"
 description = "Python SDK for Tigris <http://www.tigrisdata.com>"
 authors = ["Tigris team <support@tigrisdata.com>"]
+repository = "https://www.github.com/tigrisdata/tigris-client-python"
+documentation = "https://www.tigrisdata.com/docs/"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Database"
+]
 license = "Apache-2.0"
 readme = "README.md"
+keywords = ["database", "nosql", "vector", "search"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-grpcio-tools = "^1.54.0"
 protobuf = "^4.22.3"
 
+[tool.poetry.group.dev.dependencies]
+grpcio-tools = "^1.54.0"
 
 [build-system]
 requires = ["poetry-core"]
