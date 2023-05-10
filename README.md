@@ -9,7 +9,7 @@ Python client for Tigris
 3. Clone the repo and cd into the directory
 4. Update submodule - `git submodule update --init`
 5. Create and activate the virtual environment - `poetry shell`
-6. Install dependencies - `poetry install`
+6. Install dependencies - `poetry install --with dev`
 7. Compile proto and generate api client helpers - `make generate`
 
 ### Usage
