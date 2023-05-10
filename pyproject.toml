@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "tigris"
+version = "0.1.0"
+description = "Python SDK for Tigris <http://www.tigrisdata.com>"
+authors = ["Tigris team <support@tigrisdata.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+grpcio-tools = "^1.54.0"
+protobuf = "^4.22.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
