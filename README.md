@@ -14,7 +14,7 @@ See reference implementation in `./tests` directory that uses Tigris on `localho
 4. Update submodule - `git submodule update --init`
 5. Create and activate the virtual environment - `poetry shell`
 6. Install dependencies - `poetry install --with dev`
-7. [Optional] install [git hooks](##Git Hooks)
+7. [Optional] install [git hooks](#git-hooks)
 8. Compile proto and generate api client helpers - `make generate`
 
 ## Git Hooks
