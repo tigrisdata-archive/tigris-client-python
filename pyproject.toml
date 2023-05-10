@@ -19,6 +19,9 @@ keywords = ["database", "nosql", "vector", "search"]
 python = "^3.7"
 protobuf = "^4.22.3"
 
+[tool.poetry.group.dev]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 grpcio-tools = "^1.54.0"
 
