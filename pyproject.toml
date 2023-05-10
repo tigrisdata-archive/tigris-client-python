@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "tigris"
+name = "tigrisdb"
 version = "0.1.0"
 description = "Python SDK for Tigris <http://www.tigrisdata.com>"
 authors = ["Tigris team <support@tigrisdata.com>"]

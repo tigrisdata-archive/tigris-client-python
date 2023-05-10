@@ -5,9 +5,9 @@ import grpc
 from api.generated.server.v1.api_pb2 import CreateOrUpdateCollectionRequest, CreateOrUpdateCollectionResponse, \
     DropCollectionRequest, DropCollectionResponse
 from api.generated.server.v1.api_pb2_grpc import TigrisStub
-from tigris.collection import Collection
-from tigris.config import TigrisClientConfig
-from tigris.errors import TigrisException
+from tigrisdb.collection import Collection
+from tigrisdb.config import TigrisClientConfig
+from tigrisdb.errors import TigrisException
 
 
 class Database:

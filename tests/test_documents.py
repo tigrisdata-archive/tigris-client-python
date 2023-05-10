@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from tigris.client import TigrisClient
-from tigris.config import TigrisClientConfig
-from tigris.errors import TigrisException
+from tigrisdb.client import TigrisClient
+from tigrisdb.config import TigrisClientConfig
+from tigrisdb.errors import TigrisException
 
 
 class DbTestCase(TestCase):
