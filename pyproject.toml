@@ -16,7 +16,7 @@ readme = "README.md"
 keywords = ["database", "nosql", "vector", "search"]
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = ">=3.7,<4.0"
 protobuf = "^4.22.3"
 
 [tool.poetry.group.dev]
