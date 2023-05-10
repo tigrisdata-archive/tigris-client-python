@@ -9,9 +9,9 @@ define fix_import
 	if [[ ${1} =~ "openapi" ]] ; then \
 		rp=".." ; \
 	fi && \
-	sed -i '' "s/from google.api/from $${rp}google.api/g" ${1} && \
-	sed -i '' "s/from openapiv3/from $${rp}openapiv3/g" ${1} && \
-	sed -i '' "s/from server.v1/from $${rp}server.v1/g" ${1}
+	sed -i "s/from google.api/from $${rp}google.api/g" ${1} && \
+	sed -i "s/from openapiv3/from $${rp}openapiv3/g" ${1} && \
+	sed -i "s/from server.v1/from $${rp}server.v1/g" ${1}
 endef
 
 clean:
