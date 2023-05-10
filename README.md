@@ -11,3 +11,6 @@ Python client for Tigris
 5. Create and activate the virtual environment - `poetry shell`
 6. Install dependencies - `poetry install`
 7. Compile proto and generate api client helpers - `make generate`
+
+### Usage
+See reference implementation in `./tests` directory that uses Tigris on `localhost:8081`
