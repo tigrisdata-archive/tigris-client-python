@@ -4,7 +4,7 @@
 name = "grpcio"
 version = "1.54.0"
 description = "HTTP/2-based RPC framework"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -62,7 +62,7 @@ protobuf = ["grpcio-tools (>=1.54.0)"]
 name = "grpcio-tools"
 version = "1.54.0"
 description = "Protobuf code generator for gRPC"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -145,7 +145,7 @@ files = [
 name = "setuptools"
 version = "67.7.2"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -161,4 +161,4 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "c1380b27c8ffa3946e9e1d45009d722a7723d3dfd03c090a600be90f7ad00948"
+content-hash = "a697ac3035dc0a58494b44b2209957994490af794427ceb86dec38e7d647078c"
