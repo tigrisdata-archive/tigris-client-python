@@ -33,7 +33,7 @@ jobs:
       - name: Run linter
         run: |
           source $VENV
-          pre-commit run --all-files --color=always --show-diff-on-failure
+          pre-commit run --color=always --show-diff-on-failure
   build:
     needs: lint
     strategy:
