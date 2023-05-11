@@ -2,10 +2,10 @@ import grpc
 
 from api.generated.server.v1.api_pb2 import InsertRequest, InsertResponse, ReadRequest
 from api.generated.server.v1.api_pb2_grpc import TigrisStub
-from tigris.config import TigrisClientConfig
-from tigris.errors import TigrisException
-from tigris.types import Document
-from tigris.utils import doc_to_bytes, bytes_to_doc
+from tigrisdb.config import TigrisClientConfig
+from tigrisdb.errors import TigrisException
+from tigrisdb.types import Document
+from tigrisdb.utils import doc_to_bytes, bytes_to_doc
 
 
 class Collection:

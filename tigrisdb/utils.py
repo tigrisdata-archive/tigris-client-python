@@ -1,6 +1,6 @@
 import json
 
-from tigris.types import Document
+from tigrisdb.types import Document
 
 
 def doc_to_str(doc: Document) -> str:

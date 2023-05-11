@@ -132,5 +132,4 @@ dmypy.json
 .idea/
 
 # generated
-api/generated/
-api/proto/generated/
+api/generated

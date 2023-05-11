@@ -4,9 +4,9 @@ from typing import Optional
 import grpc
 
 from api.generated.server.v1 import api_pb2_grpc as tigris_grpc
-from tigris.config import TigrisClientConfig
-from tigris.database import Database
-from tigris.errors import TigrisException
+from tigrisdb.config import TigrisClientConfig
+from tigrisdb.database import Database
+from tigrisdb.errors import TigrisException
 
 
 class TigrisClient(object):
@@ -28,7 +28,7 @@ class TigrisClient(object):
 
         is_local_dev = filter(
             lambda k: k in config.server_url,
-            ["localhost", "127.0.0.1", "tigris-local-server:", "[::1]"],
+            ["localhost", "127.0.0.1", "tigrisdb-local-server:", "[::1]"],
         )
 
         if is_local_dev:
