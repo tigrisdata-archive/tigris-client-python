@@ -2,8 +2,12 @@ import json
 
 import grpc
 
-from api.generated.server.v1.api_pb2 import CreateOrUpdateCollectionRequest, CreateOrUpdateCollectionResponse, \
-    DropCollectionRequest, DropCollectionResponse
+from api.generated.server.v1.api_pb2 import (
+    CreateOrUpdateCollectionRequest,
+    CreateOrUpdateCollectionResponse,
+    DropCollectionRequest,
+    DropCollectionResponse,
+)
 from api.generated.server.v1.api_pb2_grpc import TigrisStub
 from tigrisdb.collection import Collection
 from tigrisdb.config import TigrisClientConfig
@@ -33,16 +37,18 @@ class Database:
             branch=self.branch,
             collection=name,
             schema=schema_str.encode(),
-            only_create=False
+            only_create=False,
         )
         try:
-            resp: CreateOrUpdateCollectionResponse = self.__client.CreateOrUpdateCollection(req)
-            if resp.status == 'created':
+            resp: CreateOrUpdateCollectionResponse = (
+                self.__client.CreateOrUpdateCollection(req)
+            )
+            if resp.status == "created":
                 return Collection(name, self.__client, self.__config)
             else:
-                raise TigrisException(f'failed to create collection: {resp.message}')
+                raise TigrisException(f"failed to create collection: {resp.message}")
         except grpc.RpcError as e:
-            raise TigrisException(f'failed to create collection: {e} ')
+            raise TigrisException(f"failed to create collection: {e} ")
 
     def drop_collection(self, name: str) -> bool:
         req = DropCollectionRequest(
@@ -54,5 +60,5 @@ class Database:
         try:
             resp: DropCollectionResponse = self.__client.DropCollection(req)
         except grpc.RpcError as e:
-            raise TigrisException(f'failed to drop collection: {e} ')
-        return resp.status == 'dropped'
+            raise TigrisException(f"failed to drop collection: {e} ")
+        return resp.status == "dropped"
