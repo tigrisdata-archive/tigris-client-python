@@ -28,6 +28,9 @@ optional = true
 pre-commit = "^3.3.0"
 black = "^23.3.0"
 
+[tool.poetry.scripts]
+make = "scripts.proto:main"
+
 [tool.black]
 line-length = 88
 
