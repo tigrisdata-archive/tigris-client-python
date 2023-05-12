@@ -10,15 +10,15 @@ from api.generated.server.v1.api_pb2 import (
 )
 from api.generated.server.v1.api_pb2_grpc import TigrisStub
 from tigrisdb.collection import Collection
-from tigrisdb.config import TigrisClientConfig
-from tigrisdb.errors import TigrisException
+from tigrisdb.errors import TigrisException, TigrisServerError
+from tigrisdb.types import ClientConfig
 
 
 class Database:
     __client: TigrisStub
-    __config: TigrisClientConfig
+    __config: ClientConfig
 
-    def __init__(self, client_stub: TigrisStub, config: TigrisClientConfig):
+    def __init__(self, client_stub: TigrisStub, config: ClientConfig):
         self.__client = client_stub
         self.__config = config
 
@@ -48,7 +48,7 @@ class Database:
             else:
                 raise TigrisException(f"failed to create collection: {resp.message}")
         except grpc.RpcError as e:
-            raise TigrisException(f"failed to create collection: {e} ")
+            raise TigrisServerError("failed to create collection", e)
 
     def drop_collection(self, name: str) -> bool:
         req = DropCollectionRequest(
@@ -60,5 +60,5 @@ class Database:
         try:
             resp: DropCollectionResponse = self.__client.DropCollection(req)
         except grpc.RpcError as e:
-            raise TigrisException(f"failed to drop collection: {e} ")
+            raise TigrisServerError("failed to drop collection", e)
         return resp.status == "dropped"
