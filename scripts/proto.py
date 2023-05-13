@@ -32,7 +32,7 @@ def generate():
             if pd_file.endswith(".proto"):
                 proto_sources.append(os.path.join(pd_path, pd_file))
 
-    for pf in ["api.proto", "search.proto"]:
+    for pf in ["api.proto", "search.proto", "auth.proto"]:
         pf_path = os.path.join(TIGRIS_PROTO_DIR, pf)
         proto_sources.append(pf_path)
 
@@ -67,6 +67,8 @@ def generate():
     for fp, fdata in replace_targets:
         with open(fp, "w") as f:
             f.write(fdata)
+
+    print(f"SUCCESS! Compiled proto stubs available in:\n{GENERATED_PROTO_DIR}")
 
 
 def clean():

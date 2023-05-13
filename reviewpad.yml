@@ -40,7 +40,6 @@ workflows:
         - rule: $isDraft() == false && $rule("is-main-branch")
       then:
         - $titleLint()
-        - $fail("PR title should match 'conventional commit' format")
 
   - name: license-validation
     description: Validate that licenses are not modified

@@ -34,6 +34,12 @@ jobs:
         run: |
           source $VENV
           pre-commit run --color=always --show-diff-on-failure
+      - name: Run tests with coverage
+        run: |
+          source $VENV
+          poetry run coverage run -m unittest discover -s tests -p "test_*.py"
+          poetry run coverage report -m
+
   build:
     needs: lint
     strategy:
@@ -60,12 +66,16 @@ jobs:
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies if cache hit
+      - name: Install dependencies if cache miss
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-      - name: Install library
+      - name: Install dependencies if poetry.lock changed
         run: poetry install --no-interaction
       - name: Compile proto to generate API stubs
         run: |
           source $VENV
           poetry run make generate
+      - name: Run tests
+        run: |
+          source $VENV
+          poetry run python -m unittest discover -s tests -p "test_*.py"
