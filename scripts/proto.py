@@ -32,7 +32,7 @@ def generate():
             if pd_file.endswith(".proto"):
                 proto_sources.append(os.path.join(pd_path, pd_file))
 
-    for pf in ["api.proto", "search.proto", "auth.proto"]:
+    for pf in ["api.proto", "search.proto", "auth.proto", "observability.proto"]:
         pf_path = os.path.join(TIGRIS_PROTO_DIR, pf)
         proto_sources.append(pf_path)
 

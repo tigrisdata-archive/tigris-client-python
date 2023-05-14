@@ -1,5 +1,3 @@
-import json
-
 import grpc
 
 from api.generated.server.v1.api_pb2 import (
@@ -12,6 +10,7 @@ from api.generated.server.v1.api_pb2_grpc import TigrisStub
 from tigrisdb.collection import Collection
 from tigrisdb.errors import TigrisException, TigrisServerError
 from tigrisdb.types import ClientConfig
+from tigrisdb.utils import schema_to_bytes
 
 
 class Database:
@@ -31,24 +30,24 @@ class Database:
         return self.__config.branch
 
     def create_or_update_collection(self, name: str, schema: dict) -> Collection:
-        schema_str = json.dumps(schema)
         req = CreateOrUpdateCollectionRequest(
             project=self.project,
             branch=self.branch,
             collection=name,
-            schema=schema_str.encode(),
+            schema=schema_to_bytes(schema),
             only_create=False,
         )
         try:
             resp: CreateOrUpdateCollectionResponse = (
                 self.__client.CreateOrUpdateCollection(req)
             )
-            if resp.status == "created":
-                return Collection(name, self.__client, self.__config)
-            else:
-                raise TigrisException(f"failed to create collection: {resp.message}")
         except grpc.RpcError as e:
             raise TigrisServerError("failed to create collection", e)
+
+        if resp.status == "created":
+            return Collection(name, self.__client, self.__config)
+        else:
+            raise TigrisException(f"failed to create collection: {resp.message}")
 
     def drop_collection(self, name: str) -> bool:
         req = DropCollectionRequest(

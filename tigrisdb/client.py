@@ -3,17 +3,20 @@ from typing import Optional
 
 import grpc
 
-from api.generated.server.v1 import api_pb2_grpc as tigris_grpc
+from api.generated.server.v1.api_pb2_grpc import TigrisStub
+from api.generated.server.v1.search_pb2_grpc import SearchStub
 from tigrisdb.auth import AuthGateway
 from tigrisdb.database import Database
 from tigrisdb.errors import TigrisException
+from tigrisdb.search import Search
 from tigrisdb.types import ClientConfig
 
 
 class TigrisClient(object):
     __LOCAL_SERVER = "localhost:8081"
 
-    __tigris_stub: tigris_grpc.TigrisStub
+    __tigris_client: TigrisStub
+    __search_client: SearchStub
     __config: ClientConfig
 
     def __init__(self, config: Optional[ClientConfig]):
@@ -54,7 +57,11 @@ class TigrisClient(object):
         except grpc.FutureTimeoutError:
             raise TigrisException(f"Connection timed out {config.server_url}")
 
-        self.__tigris_stub = tigris_grpc.TigrisStub(channel)
+        self.__tigris_client = TigrisStub(channel)
+        self.__search_client = SearchStub(channel)
 
     def get_db(self):
-        return Database(self.__tigris_stub, self.__config)
+        return Database(self.__tigris_client, self.__config)
+
+    def get_search(self):
+        return Search(self.__search_client, self.__config)
