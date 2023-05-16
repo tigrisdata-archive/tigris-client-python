@@ -32,3 +32,7 @@ def b64_to_dict(b64_str: str) -> dict:
 
 def dict_to_b64(doc: dict) -> str:
     return bytes_to_str(base64.b64encode(dict_to_bytes(doc)))
+
+
+def schema_to_bytes(schema: dict) -> bytes:
+    return str_to_bytes(dict_to_str(schema))

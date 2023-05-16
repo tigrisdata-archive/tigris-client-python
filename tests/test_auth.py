@@ -4,7 +4,11 @@ from unittest.mock import MagicMock, patch
 
 import grpc
 
-from api.generated.server.v1.auth_pb2 import GetAccessTokenResponse
+from api.generated.server.v1.auth_pb2 import (
+    CLIENT_CREDENTIALS,
+    GetAccessTokenRequest,
+    GetAccessTokenResponse,
+)
 from tests import StubRpcError
 from tigrisdb.auth import AuthGateway
 from tigrisdb.errors import TigrisServerError
@@ -35,8 +39,14 @@ class AuthGatewayTest(TestCase):
         actual_token = auth_gateway.get_access_token()
         self.assertEqual(expected_token, actual_token)
         next_refresh = auth_gateway.__getattribute__("_AuthGateway__next_refresh_time")
+
         # refresh time is within 11 minutes of expiration time
         self.assertLessEqual(expiration_time - next_refresh, 660)
+
+        # request validation
+        mock_grpc_auth.GetAccessToken.assert_called_once_with(
+            GetAccessTokenRequest(grant_type=CLIENT_CREDENTIALS)
+        )
 
     def test_get_access_token_with_rpc_failure(self, channel_ready_future, grpc_auth):
         channel_ready_future.return_value = self.done_future

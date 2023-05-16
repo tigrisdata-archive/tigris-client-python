@@ -39,6 +39,8 @@ jobs:
           source $VENV
           poetry run coverage run -m unittest discover -s tests -p "test_*.py"
           poetry run coverage report -m
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
 
   build:
     needs: lint

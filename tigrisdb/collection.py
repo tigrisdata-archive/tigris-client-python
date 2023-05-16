@@ -1,3 +1,5 @@
+from typing import List
+
 import grpc
 
 from api.generated.server.v1.api_pb2 import InsertRequest, InsertResponse, ReadRequest
@@ -31,7 +33,7 @@ class Collection:
     def name(self):
         return self.__name
 
-    def insert_many(self, docs: list[Document]) -> bool:
+    def insert_many(self, docs: List[Document]) -> bool:
         doc_bytes = map(dict_to_bytes, docs)
         req = InsertRequest(
             project=self.project,
@@ -41,14 +43,15 @@ class Collection:
         )
         try:
             resp: InsertResponse = self.__client.Insert(req)
-            if resp.status == "inserted":
-                return True
-            else:
-                raise TigrisException(f"failed to insert docs: {resp.status}")
         except grpc.RpcError as e:
             raise TigrisServerError("failed to insert documents", e)
 
-    def find_many(self) -> list[Document]:
+        if resp.status == "inserted":
+            return True
+        else:
+            raise TigrisException(f"failed to insert docs: {resp.status}")
+
+    def find_many(self) -> List[Document]:
         req = ReadRequest(
             project=self.project,
             branch=self.branch,
@@ -60,7 +63,7 @@ class Collection:
         except grpc.RpcError as e:
             raise TigrisServerError("failed to read documents", e)
 
-        docs: list[Document] = []
+        docs: List[Document] = []
         for r in doc_iterator:
             docs.append(bytes_to_dict(r.data))
 

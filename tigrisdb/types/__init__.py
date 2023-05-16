@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, Optional, Type
 
 
 @dataclass
@@ -11,4 +11,4 @@ class ClientConfig:
     server_url: str = "localhost:8081"
 
 
-Document = dict
+Document: Type[dict] = Dict
