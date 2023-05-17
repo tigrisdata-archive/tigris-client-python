@@ -112,7 +112,6 @@ class TextMatchInfo:
 
     def __post_init__(self, _p: ProtoMatch):
         if _p:
-            # todo: look to remove this has field
             self.fields = [f.name for f in _p.fields]
             self.vector_distance = _p.vector_distance
             self.score = _p.score
