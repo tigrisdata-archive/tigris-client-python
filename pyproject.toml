@@ -33,6 +33,8 @@ make = "scripts.proto:main"
 
 [tool.coverage.run]
 source = ["tigrisdb"]
+branch = true
+command_line = "-m unittest discover -s tests -p 'test_*.py'"
 
 [tool.coverage.report]
 fail_under = 40
