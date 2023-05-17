@@ -1,3 +1,4 @@
+import abc
 from dataclasses import dataclass
 from typing import Dict, Optional, Type
 
@@ -12,3 +13,12 @@ class ClientConfig:
 
 
 Document: Type[dict] = Dict
+
+
+# todo: shorten import paths
+
+
+class Serializable(abc.ABC):
+    @abc.abstractmethod
+    def as_obj(self) -> Dict:
+        raise NotImplementedError()

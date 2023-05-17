@@ -10,6 +10,7 @@ def str_to_bytes(doc_str: str) -> bytes:
     return doc_str.encode("utf-8")
 
 
+# todo: rename to marshal
 def dict_to_bytes(doc: dict) -> bytes:
     return str_to_bytes(dict_to_str(doc))
 
@@ -22,6 +23,7 @@ def str_to_dict(doc_str: str) -> dict:
     return json.loads(doc_str)
 
 
+# todo: rename to unmarshal
 def bytes_to_dict(b: bytes) -> dict:
     return str_to_dict(bytes_to_str(b))
 
@@ -35,4 +37,4 @@ def dict_to_b64(doc: dict) -> str:
 
 
 def schema_to_bytes(schema: dict) -> bytes:
-    return str_to_bytes(dict_to_str(schema))
+    return dict_to_bytes(schema)
