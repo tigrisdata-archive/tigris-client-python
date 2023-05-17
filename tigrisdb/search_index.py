@@ -18,7 +18,7 @@ from tigrisdb.types import ClientConfig, Document
 from tigrisdb.types.search import DocStatus, IndexedDoc
 from tigrisdb.types.search import Query as SearchQuery
 from tigrisdb.types.search import Result as SearchResult
-from tigrisdb.utils import dict_to_bytes
+from tigrisdb.utils import marshal
 
 
 class SearchIndex:
@@ -51,7 +51,7 @@ class SearchIndex:
         return SearchResult(_p=result_iterator)
 
     def create_many(self, docs: List[Document]) -> List[DocStatus]:
-        doc_bytes = map(dict_to_bytes, docs)
+        doc_bytes = map(marshal, docs)
         req = CreateDocumentRequest(
             project=self.project, index=self.name, documents=doc_bytes
         )
@@ -95,7 +95,7 @@ class SearchIndex:
         return self.get_many([id])[0]
 
     def update_many(self, docs: List[Document]) -> List[DocStatus]:
-        doc_bytes = map(dict_to_bytes, docs)
+        doc_bytes = map(marshal, docs)
         req = UpdateDocumentRequest(
             project=self.project, index=self.name, documents=doc_bytes
         )

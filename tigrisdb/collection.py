@@ -6,7 +6,7 @@ from api.generated.server.v1.api_pb2 import InsertRequest, InsertResponse, ReadR
 from api.generated.server.v1.api_pb2_grpc import TigrisStub
 from tigrisdb.errors import TigrisException, TigrisServerError
 from tigrisdb.types import ClientConfig, Document
-from tigrisdb.utils import bytes_to_dict, dict_to_bytes
+from tigrisdb.utils import marshal, unmarshal
 
 
 class Collection:
@@ -34,7 +34,7 @@ class Collection:
         return self.__name
 
     def insert_many(self, docs: List[Document]) -> bool:
-        doc_bytes = map(dict_to_bytes, docs)
+        doc_bytes = map(marshal, docs)
         req = InsertRequest(
             project=self.project,
             branch=self.branch,
@@ -56,7 +56,7 @@ class Collection:
             project=self.project,
             branch=self.branch,
             collection=self.name,
-            filter=dict_to_bytes({}),
+            filter=marshal({}),
         )
         try:
             doc_iterator = self.__client.Read(req)
@@ -65,6 +65,6 @@ class Collection:
 
         docs: List[Document] = []
         for r in doc_iterator:
-            docs.append(bytes_to_dict(r.data))
+            docs.append(unmarshal(r.data))
 
         return docs

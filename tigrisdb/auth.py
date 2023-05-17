@@ -11,7 +11,7 @@ from api.generated.server.v1.auth_pb2 import (
 )
 from tigrisdb.errors import TigrisException, TigrisServerError
 from tigrisdb.types import ClientConfig
-from tigrisdb.utils import b64_to_dict
+from tigrisdb.utils import b64_to_object
 
 
 class AuthGateway(grpc.AuthMetadataPlugin):
@@ -40,7 +40,7 @@ class AuthGateway(grpc.AuthMetadataPlugin):
             try:
                 resp: GetAccessTokenResponse = self.__auth_stub.GetAccessToken(req)
                 self.__cached_token = resp.access_token
-                token_meta = b64_to_dict(self.__cached_token.split(".")[1] + "==")
+                token_meta = b64_to_object(self.__cached_token.split(".")[1] + "==")
                 exp = float(token_meta["exp"])
                 self.__next_refresh_time = exp - 300 - float(randint(0, 300) + 60)
             except grpc.RpcError as e:

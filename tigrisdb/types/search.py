@@ -15,7 +15,7 @@ from api.generated.server.v1.search_pb2 import (
 from tigrisdb.errors import TigrisException
 from tigrisdb.types import Document, Serializable
 from tigrisdb.types.sort import Sort
-from tigrisdb.utils import bytes_to_dict, dict_to_bytes
+from tigrisdb.utils import marshal, unmarshal
 
 dataclass_default_proto_field = field(
     default=None, repr=False, compare=False, hash=False
@@ -60,7 +60,7 @@ class Query:
         if self.search_fields:
             req.search_fields.extend(self.search_fields)
         if self.vector_query:
-            req.vector = dict_to_bytes(self.vector_query.as_obj())
+            req.vector = marshal(self.vector_query.as_obj())
         if self.facet_by:
             f = {}
             if isinstance(self.facet_by, str):
@@ -71,17 +71,17 @@ class Query:
                         f[facet] = FacetSize(facet).as_obj()
                     elif isinstance(facet, FacetSize):
                         f[facet.field] = facet.as_obj()
-            req.facet = dict_to_bytes(f)
+            req.facet = marshal(f)
         if self.sort_by:
             order = []
             if isinstance(self.sort_by, Sort):
                 order.append(self.sort_by.as_obj())
             elif isinstance(self.sort_by, list):
                 order = [s.as_obj() for s in self.sort_by]
-            req.sort = dict_to_bytes(order)
+            req.sort = marshal(order)
         if self.group_by:
             g = [self.group_by] if isinstance(self.group_by, str) else self.group_by
-            req.group_by = dict_to_bytes(g)
+            req.group_by = marshal(g)
         if self.include_fields:
             req.include_fields.extend(self.include_fields)
         if self.exclude_fields:
@@ -141,7 +141,7 @@ class IndexedDoc:
 
     def __post_init__(self, _p: ProtoSearchHit):
         if _p:
-            self.doc = bytes_to_dict(_p.data)
+            self.doc = unmarshal(_p.data)
             self.meta = DocMeta(_p=_p.metadata)
 
 
