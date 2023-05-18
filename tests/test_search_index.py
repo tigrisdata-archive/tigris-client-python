@@ -7,7 +7,7 @@ from tests import StubRpcError
 from tigrisdb.errors import TigrisServerError
 from tigrisdb.search_index import SearchIndex
 from tigrisdb.types import ClientConfig, Document
-from tigrisdb.utils import bytes_to_dict
+from tigrisdb.utils import unmarshal
 
 
 @patch("api.generated.server.v1.search_pb2_grpc.SearchStub")
@@ -51,7 +51,7 @@ class SearchIndexTest(TestCase):
         called_with = mock_grpc.Update.call_args.args[0]
         self.assertEqual(called_with.project, search_index.project)
         self.assertEqual(called_with.index, search_index.name)
-        self.assertEqual(list(map(bytes_to_dict, called_with.documents)), docs)
+        self.assertEqual(list(map(unmarshal, called_with.documents)), docs)
 
     def test_update_many_with_error(self, grpc_search):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]

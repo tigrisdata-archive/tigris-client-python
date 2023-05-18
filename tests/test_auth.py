@@ -13,7 +13,7 @@ from tests import StubRpcError
 from tigrisdb.auth import AuthGateway
 from tigrisdb.errors import TigrisServerError
 from tigrisdb.types import ClientConfig
-from tigrisdb.utils import dict_to_b64
+from tigrisdb.utils import obj_to_b64
 
 
 @patch("api.generated.server.v1.auth_pb2_grpc.AuthStub")
@@ -99,4 +99,4 @@ class AuthGatewayTest(TestCase):
 
 
 def _encoded_token(expiration: float):
-    return f'token.{dict_to_b64({"exp": expiration})}'
+    return f'token.{obj_to_b64({"exp": expiration})}'

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterator, List
 
 import grpc
 
@@ -18,7 +18,7 @@ from tigrisdb.types import ClientConfig, Document
 from tigrisdb.types.search import DocStatus, IndexedDoc
 from tigrisdb.types.search import Query as SearchQuery
 from tigrisdb.types.search import Result as SearchResult
-from tigrisdb.utils import dict_to_bytes
+from tigrisdb.utils import marshal
 
 
 class SearchIndex:
@@ -39,19 +39,19 @@ class SearchIndex:
     def name(self):
         return self.__name
 
-    def search(self, query: SearchQuery, page: int) -> SearchResult:
-        req = SearchIndexRequest(
-            project=self.project, index=self.name, q=query.q, page=page
-        )
+    def search(self, query: SearchQuery, page: int = 1) -> SearchResult:
+        req = SearchIndexRequest(project=self.project, index=self.name, page=page)
+        query.__build__(req)
         try:
-            result_iterator: SearchIndexResponse = self.__client.Search(req)
+            result_iterator: Iterator[SearchIndexResponse] = self.__client.Search(req)
         except grpc.RpcError as e:
             raise TigrisServerError("failed to search documents", e)
-
-        return SearchResult(_p=result_iterator)
+        # only single page of result will be returned
+        for res in result_iterator:
+            return SearchResult(_p=res)
 
     def create_many(self, docs: List[Document]) -> List[DocStatus]:
-        doc_bytes = map(dict_to_bytes, docs)
+        doc_bytes = map(marshal, docs)
         req = CreateDocumentRequest(
             project=self.project, index=self.name, documents=doc_bytes
         )
@@ -95,7 +95,7 @@ class SearchIndex:
         return self.get_many([id])[0]
 
     def update_many(self, docs: List[Document]) -> List[DocStatus]:
-        doc_bytes = map(dict_to_bytes, docs)
+        doc_bytes = map(marshal, docs)
         req = UpdateDocumentRequest(
             project=self.project, index=self.name, documents=doc_bytes
         )
