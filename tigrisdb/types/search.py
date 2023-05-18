@@ -44,15 +44,16 @@ class VectorField(Serializable):
 
 
 # TODO: add filter, collation
+@dataclass()
 class Query:
     q: str = ""
-    search_fields: List[str] = []
+    search_fields: List[str] = field(default_factory=list)
     vector_query: VectorField = None
-    facet_by: Union[str, List[FacetField]] = []
-    sort_by: Union[Sort, List[Sort]] = []
-    group_by: Union[str, List[str]] = []
-    include_fields: List[str] = []
-    exclude_fields: List[str] = []
+    facet_by: Union[str, List[FacetField]] = field(default_factory=list)
+    sort_by: Union[Sort, List[Sort]] = field(default_factory=list)
+    group_by: Union[str, List[str]] = field(default_factory=list)
+    include_fields: List[str] = field(default_factory=list)
+    exclude_fields: List[str] = field(default_factory=list)
     hits_per_page: int = 20
 
     def __build__(self, req: ProtoSearchIndexRequest):

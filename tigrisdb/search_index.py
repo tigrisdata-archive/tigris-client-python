@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterator, List
 
 import grpc
 
@@ -39,16 +39,16 @@ class SearchIndex:
     def name(self):
         return self.__name
 
-    def search(self, query: SearchQuery, page: int) -> SearchResult:
-        req = SearchIndexRequest(
-            project=self.project, index=self.name, q=query.q, page=page
-        )
+    def search(self, query: SearchQuery, page: int = 1) -> SearchResult:
+        req = SearchIndexRequest(project=self.project, index=self.name, page=page)
+        query.__build__(req)
         try:
-            result_iterator: SearchIndexResponse = self.__client.Search(req)
+            result_iterator: Iterator[SearchIndexResponse] = self.__client.Search(req)
         except grpc.RpcError as e:
             raise TigrisServerError("failed to search documents", e)
-
-        return SearchResult(_p=result_iterator)
+        # only single page of result will be returned
+        for res in result_iterator:
+            return SearchResult(_p=res)
 
     def create_many(self, docs: List[Document]) -> List[DocStatus]:
         doc_bytes = map(marshal, docs)
