@@ -61,7 +61,6 @@ jobs:
         run: |
           source $VENV
           poetry run make generate
-      - run: echo github.push.ref
       - name: Release dry run
         if: github.event_name == 'pull_request'
         env:

@@ -4,12 +4,12 @@
     {
       "name": "release/beta",
       "channel": "beta",
-      "prerelease": true
+      "prerelease": "beta"
     },
     {
       "name": "release/next",
       "channel": "next",
-      "prerelease": true
+      "prerelease": "rc"
     }
   ],
   "plugins": [
