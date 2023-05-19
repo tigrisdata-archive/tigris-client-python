@@ -26,8 +26,17 @@ jobs:
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Install dev dependencies
-        run: poetry install --no-root --with=dev
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies if cache miss
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --with=dev
+      - name: Install dependencies if poetry.lock changed
+        run: poetry install --no-interaction --with=dev
       - name: Compile proto to generate API stubs
         run: |
           source $VENV
@@ -73,9 +82,9 @@ jobs:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies if cache miss
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --with=dev
       - name: Install dependencies if poetry.lock changed
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --with=dev
       - name: Compile proto to generate API stubs
         run: |
           source $VENV
