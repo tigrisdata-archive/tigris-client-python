@@ -50,8 +50,19 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install dependencies if poetry.lock changed
         run: poetry install --no-interaction
-      - name: Test command
-        run: echo "hello world"
-      - run: ls -la api/
-      - run: ls -la api/generated
-      - run: poetry list
+      - name: Build package
+        run: |
+          source $VENV
+          poetry run make generate
+          poetry build
+      - name: Release dry run
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_REPO: "https://test.pypi.org/legacy/"
+        run: |
+          source $VENV
+          npx semantic-release --debug --dry-run
+      - name: Release
+        if: github.event_name == 'push'
+        run: echo "skip me"
