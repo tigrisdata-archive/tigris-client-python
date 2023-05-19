@@ -52,5 +52,6 @@ jobs:
         run: poetry install --no-interaction
       - name: Test command
         run: echo "hello world"
-      - run: ls -la
+      - run: ls -la api/
+      - run: ls -la api/generated
       - run: poetry list
