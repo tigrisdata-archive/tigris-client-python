@@ -1,8 +1,8 @@
-name: release-dry-run
+name: release
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+  push:
     branches:
+      - "channeled-release"
       - "release/stable"
       - "release/beta"
       - "release/next"
@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
   release-dry-run:
     needs: build
-    name: Release dry run
+    name: Release
     runs-on: ubuntu-latest
     permissions:
       contents: write # to be able to publish a GitHub release
@@ -52,12 +52,12 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install dependencies if poetry.lock changed
         run: poetry install --no-interaction
-      - name: Build package
+      - name: Compile proto to generate API stubs
         run: |
           source $VENV
           poetry run make generate
-          poetry build
-      - name: Release dry run
+      - run: echo github.push.ref
+      - name: Release dry run "main"
         if: github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,6 +65,3 @@ jobs:
         run: |
           source $VENV
           npx semantic-release --debug --dry-run
-      - name: Release
-        if: github.event_name == 'push'
-        run: echo "skip me"
