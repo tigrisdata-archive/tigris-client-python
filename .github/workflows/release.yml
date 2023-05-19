@@ -1,8 +1,13 @@
 name: release
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - "release/stable"
+      - "release/beta"
+      - "release/next"
   push:
     branches:
-      - "channeled-release"
       - "release/stable"
       - "release/beta"
       - "release/next"
@@ -57,11 +62,14 @@ jobs:
           source $VENV
           poetry run make generate
       - run: echo github.push.ref
-      - name: Release dry run "main"
+      - name: Release dry run
         if: github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_REPO: "https://test.pypi.org/legacy/"
         run: |
           source $VENV
-          npx semantic-release --debug --dry-run
+          npx semantic-release --debug --no-ci --dry-run
+      - name: Release
+        if: github.event_name == 'pull_request'
+        run: echo "dry run"
