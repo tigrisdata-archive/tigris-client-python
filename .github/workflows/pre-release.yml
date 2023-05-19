@@ -3,7 +3,6 @@ on:
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
-      - "main"
       - "release/stable"
       - "release/beta"
       - "release/next"
@@ -12,8 +11,9 @@ permissions:
   contents: read # for checkout
 
 jobs:
-  release-dry-run:
+  build:
     uses: ./.github/workflows/ci.yml
+  release-dry-run:
     name: Release dry run
     runs-on: ubuntu-latest
     permissions:
