@@ -1,0 +1,75 @@
+name: release
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - "release/stable"
+      - "release/beta"
+      - "release/next"
+  push:
+    branches:
+      - "release/stable"
+      - "release/beta"
+      - "release/next"
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  build:
+    uses: ./.github/workflows/ci.yml
+  release-dry-run:
+    needs: build
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Install semantic release
+        run: npm install --no-save semantic-release @semantic-release/exec
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies if cache miss
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install dependencies if poetry.lock changed
+        run: poetry install --no-interaction
+      - name: Compile proto to generate API stubs
+        run: |
+          source $VENV
+          poetry run make generate
+      - run: echo github.push.ref
+      - name: Release dry run
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_REPO: "https://test.pypi.org/legacy/"
+        run: |
+          source $VENV
+          npx semantic-release --debug --no-ci --dry-run
+      - name: Release
+        if: github.event_name == 'pull_request'
+        run: echo "dry run"
