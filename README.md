@@ -2,6 +2,12 @@
 
 Python client for Tigris
 
+## Installation
+
+```commandline
+pip install tigris-client-python>=1.0.0.b1
+```
+
 # Usage
 
 See reference implementation in `./tests` directory that uses Tigris on `localhost:8081`
