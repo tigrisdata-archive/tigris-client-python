@@ -10,6 +10,11 @@
       "name": "release/next",
       "channel": "next",
       "prerelease": "rc"
+    },
+    {
+      "name": "refs/pull/*/merge",
+      "channel": "dev",
+      "prerelease": "dev"
     }
   ],
   "plugins": [
