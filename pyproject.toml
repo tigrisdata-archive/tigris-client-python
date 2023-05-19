@@ -6,7 +6,7 @@ authors = ["Tigris team <support@tigrisdata.com>"]
 repository = "https://www.github.com/tigrisdata/tigris-client-python"
 documentation = "https://www.tigrisdata.com/docs/"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Topic :: Database"

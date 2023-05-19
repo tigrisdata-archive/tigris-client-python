@@ -1,11 +1,5 @@
 name: release
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    branches:
-      - "release/stable"
-      - "release/beta"
-      - "release/next"
   push:
     branches:
       - "release/stable"
@@ -24,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for npm provenance
     steps:
       - name: Checkout
@@ -36,7 +32,7 @@ jobs:
         with:
           node-version: "lts/*"
       - name: Install semantic release
-        run: npm install --no-save semantic-release @semantic-release/exec
+        run: npm install --no-save semantic-release @semantic-release/exec conventional-changelog-conventionalcommits
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
@@ -61,15 +57,11 @@ jobs:
         run: |
           source $VENV
           poetry run make generate
-      - run: echo github.push.ref
-      - name: Release dry run
-        if: github.event_name == 'pull_request'
+      - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_REPO: "https://test.pypi.org/legacy/"
+          PYPI_REPO: "https://upload.pypi.org/legacy/"
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           source $VENV
-          npx semantic-release --debug --no-ci --dry-run
-      - name: Release
-        if: github.event_name == 'pull_request'
-        run: echo "dry run"
+          npx semantic-release --debug
