@@ -1,7 +1,7 @@
 # Define the list of rules to be used by Reviewpad.
 rules:
   - name: is-release-branch
-    spec: $base() == "beta" || $base() == "alpha" || $base() == "release"
+    spec: $base() == "release/beta" || $base() == "release/stable" || $base() == "release/next"
   - name: is-main-branch
     spec: $base() == "main"
 
