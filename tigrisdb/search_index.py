@@ -66,11 +66,11 @@ class SearchIndex:
     def create_one(self, doc: Document) -> DocStatus:
         return self.create_many([doc])[0]
 
-    def delete_many(self, ids: List[str]):
+    def delete_many(self, doc_ids: List[str]):
         raise NotImplementedError
 
-    def delete_one(self, id: str):
-        return self.delete_many([id])
+    def delete_one(self, doc_id: str):
+        return self.delete_many([doc_id])
 
     def delete_by_query(self):
         raise NotImplementedError("deletion by filters is not supported yet")
@@ -81,8 +81,8 @@ class SearchIndex:
     def create_or_replace_one(self, doc: Document):
         return self.create_or_replace_many([doc])
 
-    def get_many(self, ids: List[str]) -> List[IndexedDoc]:
-        req = GetDocumentRequest(project=self.project, index=self.name, ids=ids)
+    def get_many(self, doc_ids: List[str]) -> List[IndexedDoc]:
+        req = GetDocumentRequest(project=self.project, index=self.name, ids=doc_ids)
 
         try:
             resp: GetDocumentResponse = self.__client.Get(req)
@@ -91,8 +91,8 @@ class SearchIndex:
 
         return [IndexedDoc(_p=hit) for hit in resp.documents]
 
-    def get_one(self, id: str) -> IndexedDoc:
-        return self.get_many([id])[0]
+    def get_one(self, doc_id: str) -> IndexedDoc:
+        return self.get_many([doc_id])[0]
 
     def update_many(self, docs: List[Document]) -> List[DocStatus]:
         doc_bytes = map(marshal, docs)
