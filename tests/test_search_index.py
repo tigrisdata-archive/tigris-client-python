@@ -1,3 +1,4 @@
+import datetime
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -42,17 +43,23 @@ class SearchIndexTest(TestCase):
             {"id": "1", "title": "नमस्ते to India", "tags": ["travel"]},
             {"id": "2", "title": "reliable systems 🙏", "tags": ["it"]},
         ]
+        ts, proto_ts = (
+            datetime.datetime.strptime(
+                "2023-05-05T10:00:00+00:00", "%Y-%m-%dT%H:%M:%S%z"
+            ),
+            ProtoTimestamp(),
+        )
+        proto_ts.FromDatetime(ts)
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        ts = ProtoTimestamp()
         expected_resp = GetDocumentResponse()
         expected_resp.documents.extend(
             [
                 SearchHit(
                     data=marshal(docs[0]),
                     metadata=SearchHitMeta(
-                        created_at=ts.FromJsonString("2023-05-05T10:00:00Z"),
-                        # updated_at=Timestamp().FromJsonString("2022-11-07T04:30:00Z"),
+                        created_at=proto_ts,
+                        updated_at=proto_ts,
                         match=Match(
                             fields=[MatchField(name="f1")],
                             score="25.0",
@@ -65,7 +72,36 @@ class SearchIndexTest(TestCase):
         )
         mock_grpc.Get.return_value = expected_resp
         resp = search_index.get_many(list(map(lambda d: d["id"], docs)))
-        print(resp)
+        self.assertEqual(len(docs), len(resp))
+        self.assertEqual(docs[0], resp[0].doc)
+        self.assertEqual(ts, resp[0].meta.created_at)
+        self.assertEqual(ts, resp[0].meta.updated_at)
+        self.assertEqual("25.0", resp[0].meta.text_match.score)
+        self.assertEqual(["f1"], resp[0].meta.text_match.fields)
+        self.assertEqual(34.35, resp[0].meta.text_match.vector_distance)
+        self.assertEqual(docs[1], resp[1].doc)
+
+    def test_get_many_with_error(self, grpc_search):
+        search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
+        mock_grpc = grpc_search()
+        mock_grpc.Get.side_effect = StubRpcError(
+            code="Unavailable", details="operational failure"
+        )
+
+        with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
+            search_index.get_many(["id"])
+        self.assertIsNotNone(e)
+
+    def test_get_one(self, grpc_search):
+        with patch.object(
+            SearchIndex, "get_many", return_value="some_str"
+        ) as mock_get_many:
+            search_index = SearchIndex(
+                self.index_name, grpc_search(), self.client_config
+            )
+            search_index.get_one("id")
+
+        mock_get_many.assert_called_once_with(["id"])
 
     def test_update_many(self, grpc_search):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]

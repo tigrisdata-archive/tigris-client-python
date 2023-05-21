@@ -13,6 +13,7 @@ class ClientConfig:
 
 
 Document: Type[dict] = Dict
+RFC3339_format = "%Y-%m-%dT%H:%M:%S%z"
 
 
 # todo: shorten import paths
