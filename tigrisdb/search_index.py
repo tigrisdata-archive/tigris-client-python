@@ -5,6 +5,10 @@ import grpc
 from api.generated.server.v1.search_pb2 import (
     CreateDocumentRequest,
     CreateDocumentResponse,
+    CreateOrReplaceDocumentRequest,
+    CreateOrReplaceDocumentResponse,
+    DeleteDocumentRequest,
+    DeleteDocumentResponse,
     GetDocumentRequest,
     GetDocumentResponse,
     SearchIndexRequest,
@@ -66,20 +70,35 @@ class SearchIndex:
     def create_one(self, doc: Document) -> DocStatus:
         return self.create_many([doc])[0]
 
-    def delete_many(self, doc_ids: List[str]):
-        raise NotImplementedError
+    def delete_many(self, doc_ids: List[str]) -> List[DocStatus]:
+        req = DeleteDocumentRequest(project=self.project, index=self.name, ids=doc_ids)
 
-    def delete_one(self, doc_id: str):
-        return self.delete_many([doc_id])
+        try:
+            resp: DeleteDocumentResponse = self.__client.Delete(req)
+        except grpc.RpcError as e:
+            raise TigrisServerError("failed to delete documents", e)
+
+        return [DocStatus(_p=d) for d in resp.status]
+
+    def delete_one(self, doc_id: str) -> DocStatus:
+        return self.delete_many([doc_id])[0]
 
     def delete_by_query(self):
         raise NotImplementedError("deletion by filters is not supported yet")
 
-    def create_or_replace_many(self, docs: List[Document]):
-        raise NotImplementedError
+    def create_or_replace_many(self, docs: List[Document]) -> List[DocStatus]:
+        doc_bytes = map(marshal, docs)
+        req = CreateOrReplaceDocumentRequest(
+            project=self.project, index=self.name, documents=doc_bytes
+        )
+        try:
+            resp: CreateOrReplaceDocumentResponse = self.__client.CreateOrReplace(req)
+        except grpc.RpcError as e:
+            raise TigrisServerError("failed to create or replace documents", e)
+        return [DocStatus(_p=d) for d in resp.status]
 
-    def create_or_replace_one(self, doc: Document):
-        return self.create_or_replace_many([doc])
+    def create_or_replace_one(self, doc: Document) -> DocStatus:
+        return self.create_or_replace_many([doc])[0]
 
     def get_many(self, doc_ids: List[str]) -> List[IndexedDoc]:
         req = GetDocumentRequest(project=self.project, index=self.name, ids=doc_ids)
