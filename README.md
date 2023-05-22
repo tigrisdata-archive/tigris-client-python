@@ -5,7 +5,7 @@ Python client for Tigris
 ## Installation
 
 ```commandline
-pip install tigris-client-python>=1.0.0.b1
+pip install tigrisdb
 ```
 
 # Usage
