@@ -37,7 +37,7 @@ branch = true
 command_line = "-m unittest discover -s tests -p 'test_*.py'"
 
 [tool.coverage.report]
-fail_under = 40
+fail_under = 70
 
 [build-system]
 requires = ["poetry-core"]
