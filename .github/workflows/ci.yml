@@ -49,7 +49,7 @@ jobs:
       - name: Run linter
         run: |
           source $VENV
-          pre-commit run --color=always --show-diff-on-failure
+          pre-commit run -a --color=always --show-diff-on-failure
       - name: Run tests with coverage
         run: |
           source $VENV

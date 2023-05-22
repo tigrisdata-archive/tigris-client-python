@@ -9,14 +9,19 @@ from api.generated.server.v1.observability_pb2 import Error as ProtoError
 from api.generated.server.v1.search_pb2 import (
     CreateDocumentResponse,
     CreateOrReplaceDocumentResponse,
+    DeleteDocumentRequest,
+    DeleteDocumentResponse,
     DocStatus,
     GetDocumentResponse,
+    SearchIndexRequest,
+    SearchIndexResponse,
     UpdateDocumentResponse,
 )
 from tests import StubRpcError
 from tigrisdb.errors import TigrisServerError
 from tigrisdb.search_index import SearchIndex
 from tigrisdb.types import ClientConfig, Document
+from tigrisdb.types.search import Query as SearchQuery
 from tigrisdb.utils import marshal, unmarshal
 
 
@@ -27,6 +32,34 @@ class SearchIndexTest(TestCase):
             server_url="localhost:5000", project_name="db1"
         )
         self.index_name = "catalog"
+
+    def test_search(self, grpc_search):
+        search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
+        mock_grpc = grpc_search()
+        mock_grpc.Search.return_value = [
+            SearchIndexResponse(hits=[SearchHit(data=marshal({"f": "v"}))])
+        ]
+        query = SearchQuery(q="hello world")
+        resp = search_index.search(query, 3)
+        self.assertEqual(1, len(resp.hits))
+        self.assertEqual({"f": "v"}, resp.hits[0].doc)
+
+        mock_grpc.Search.assert_called_once()
+        called_with: SearchIndexRequest = mock_grpc.Search.call_args.args[0]
+        self.assertEqual(called_with.project, search_index.project)
+        self.assertEqual(called_with.index, search_index.name)
+        self.assertEqual("hello world", called_with.q)
+        self.assertEqual(3, called_with.page)
+
+    def test_search_with_error(self, grpc_search):
+        search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
+        mock_grpc = grpc_search()
+        mock_grpc.Search.side_effect = StubRpcError(
+            code="Unavailable", details="operational failure"
+        )
+        with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
+            search_index.search(SearchQuery())
+        self.assertIsNotNone(e)
 
     def test_create_many(self, grpc_search):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]
@@ -74,6 +107,38 @@ class SearchIndexTest(TestCase):
             search_index.create_one(doc)
 
         mock_create_many.assert_called_once_with([doc])
+
+    def test_delete_many(self, grpc_search):
+        search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
+        mock_grpc = grpc_search()
+        mock_grpc.Delete.return_value = DeleteDocumentResponse(
+            status=[
+                DocStatus(id="1"),
+                DocStatus(id="2", error=ProtoError(message="conflict")),
+            ]
+        )
+        resp = search_index.delete_many(["1", "2"])
+        self.assertEqual(resp[0].id, "1")
+        self.assertIsNone(resp[0].error)
+        self.assertEqual(resp[1].id, "2")
+        self.assertRegex(resp[1].error.msg, "conflict")
+
+        mock_grpc.Delete.assert_called_once()
+        called_with: DeleteDocumentRequest = mock_grpc.Delete.call_args.args[0]
+        self.assertEqual(called_with.project, search_index.project)
+        self.assertEqual(called_with.index, search_index.name)
+        self.assertEqual(called_with.ids, ["1", "2"])
+
+    def test_delete_many_with_error(self, grpc_search):
+        search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
+        mock_grpc = grpc_search()
+        mock_grpc.Delete.side_effect = StubRpcError(
+            code="Unavailable", details="operational failure"
+        )
+
+        with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
+            search_index.delete_many(["id"])
+        self.assertIsNotNone(e)
 
     def test_delete_one(self, grpc_search):
         with patch.object(
