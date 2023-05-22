@@ -1,5 +1,6 @@
 import base64
 import json
+from typing import Union
 
 
 def obj_to_str(doc: object) -> str:
@@ -22,7 +23,7 @@ def str_to_obj(doc_str: str) -> object:
     return json.loads(doc_str)
 
 
-def unmarshal(b: bytes) -> object:
+def unmarshal(b: bytes) -> Union[object, dict]:
     return str_to_obj(bytes_to_str(b))
 
 
