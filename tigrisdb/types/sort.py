@@ -1,17 +1,17 @@
 import abc
 
-from tigrisdb.types import Serializable
+from tigrisdb.types import BaseOperator
 
 
-class Sort(Serializable):
+class Sort(BaseOperator):
     field = ""
 
     @property
     @abc.abstractmethod
     def operator(self):
-        pass
+        raise NotImplementedError("Use either `Ascending` or `Descending`")
 
-    def as_obj(self):
+    def query(self):
         return {self.field: self.operator}
 
 

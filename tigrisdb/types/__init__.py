@@ -19,7 +19,7 @@ RFC3339_format = "%Y-%m-%dT%H:%M:%S%z"
 # todo: shorten import paths
 
 
-class Serializable(abc.ABC):
+class BaseOperator(abc.ABC):
     @abc.abstractmethod
-    def as_obj(self) -> Dict:
+    def query(self) -> Dict:
         raise NotImplementedError()
