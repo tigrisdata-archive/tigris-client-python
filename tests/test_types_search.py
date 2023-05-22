@@ -56,22 +56,25 @@ class SearchQueryTest(TestCase):
         self.assertEqual(proto_req.page_size, 20)
 
     def test_with_q(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.q = "hello world"
+        query, proto_req = Query(q="hello world"), SearchIndexRequest()
         query.__build__(proto_req)
 
         self.assertEqual("hello world", proto_req.q)
 
     def test_with_search_fields(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.search_fields = ["name.first", "balance"]
+        query, proto_req = (
+            Query(search_fields=["name.first", "balance"]),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
 
         self.assertEqual(["name.first", "balance"], proto_req.search_fields)
 
     def test_with_vector_query(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.vector_query = VectorField("embedding", [1.1, 2.456, 34.88])
+        query, proto_req = (
+            Query(vector_query=VectorField("embedding", [1.1, 2.456, 34.88])),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
 
         self.assertEqual(
@@ -79,15 +82,16 @@ class SearchQueryTest(TestCase):
         )
 
     def test_with_facet_by(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.facet_by = "field_1"
+        query, proto_req = Query(facet_by="field_1"), SearchIndexRequest()
         query.__build__(proto_req)
         self.assertEqual(
             '{"field_1": {"size": 10, "type": "value"}}'.encode(), proto_req.facet
         )
 
-        query, proto_req = Query(), SearchIndexRequest()
-        query.facet_by = ["f1", FacetSize("f2", 25), FacetSize("f3")]
+        query, proto_req = (
+            Query(facet_by=["f1", FacetSize("f2", 25), FacetSize("f3")]),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
         self.assertEqual(
             '{"f1": {"size": 10, "type": "value"}, "f2": {"size": 25, "type": "value"},'
@@ -96,48 +100,52 @@ class SearchQueryTest(TestCase):
         )
 
     def test_with_sort_by(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.sort_by = sort.Ascending("f1")
+        query, proto_req = Query(sort_by=sort.Ascending("f1")), SearchIndexRequest()
         query.__build__(proto_req)
         self.assertEqual('[{"f1": "$asc"}]'.encode(), proto_req.sort)
 
-        query, proto_req = Query(), SearchIndexRequest()
-        query.sort_by = [
-            sort.Descending("f2"),
-            sort.Ascending("f1"),
-            sort.Ascending("f3"),
-        ]
+        query, proto_req = (
+            Query(
+                sort_by=[
+                    sort.Descending("f2"),
+                    sort.Ascending("f1"),
+                    sort.Ascending("f3"),
+                ]
+            ),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
         self.assertEqual(
             '[{"f2": "$desc"}, {"f1": "$asc"}, {"f3": "$asc"}]'.encode(), proto_req.sort
         )
 
     def test_with_group_by(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.group_by = "f1"
+        query, proto_req = Query(group_by="f1"), SearchIndexRequest()
         query.__build__(proto_req)
         self.assertEqual('["f1"]'.encode(), proto_req.group_by)
 
-        query, proto_req = Query(), SearchIndexRequest()
-        query.group_by = ["f1", "f2", "f3"]
+        query, proto_req = Query(group_by=["f1", "f2", "f3"]), SearchIndexRequest()
         query.__build__(proto_req)
         self.assertEqual('["f1", "f2", "f3"]'.encode(), proto_req.group_by)
 
     def test_with_include_fields(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.include_fields = ["f1", "f2", "f3"]
+        query, proto_req = (
+            Query(include_fields=["f1", "f2", "f3"]),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
         self.assertEqual(["f1", "f2", "f3"], proto_req.include_fields)
 
     def test_with_exclude_fields(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.exclude_fields = ["f1", "f2", "f3"]
+        query, proto_req = (
+            Query(exclude_fields=["f1", "f2", "f3"]),
+            SearchIndexRequest(),
+        )
         query.__build__(proto_req)
         self.assertEqual(["f1", "f2", "f3"], proto_req.exclude_fields)
 
     def test_with_page_size(self):
-        query, proto_req = Query(), SearchIndexRequest()
-        query.hits_per_page = 25
+        query, proto_req = Query(hits_per_page=25), SearchIndexRequest()
         query.__build__(proto_req)
         self.assertEqual(25, proto_req.page_size)
 
