@@ -19,7 +19,7 @@ from api.generated.server.v1.search_pb2 import (
     SearchIndexResponse as ProtoSearchIndexResponse,
 )
 from tigrisdb.errors import TigrisException
-from tigrisdb.types import BaseOperator, Document
+from tigrisdb.types import Document, Serializable
 from tigrisdb.types.sort import Sort
 from tigrisdb.utils import marshal, unmarshal
 
@@ -29,7 +29,7 @@ dataclass_default_proto_field = field(
 
 
 @dataclass
-class FacetSize(BaseOperator):
+class FacetSize(Serializable):
     field: str
     size: int = 10
 
@@ -41,7 +41,7 @@ FacetField = Union[str, FacetSize]
 
 
 @dataclass
-class VectorField(BaseOperator):
+class VectorField(Serializable):
     field: str
     vector: List[float]
 
