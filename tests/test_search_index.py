@@ -20,7 +20,7 @@ from api.generated.server.v1.search_pb2 import (
 from tests import StubRpcError
 from tigrisdb.errors import TigrisServerError
 from tigrisdb.search_index import SearchIndex
-from tigrisdb.types import ClientConfig, Document
+from tigrisdb.types import ClientConfig, Document, RFC3339_format
 from tigrisdb.types.search import Query as SearchQuery
 from tigrisdb.utils import marshal, unmarshal
 
@@ -204,9 +204,7 @@ class SearchIndexTest(TestCase):
             {"id": "2", "title": "reliable systems 🙏", "tags": ["it"]},
         ]
         ts, proto_ts = (
-            datetime.datetime.strptime(
-                "2023-05-05T10:00:00+00:00", "%Y-%m-%dT%H:%M:%S%z"
-            ),
+            datetime.datetime.strptime("2023-05-05T10:00:00+00:00", RFC3339_format),
             ProtoTimestamp(),
         )
         proto_ts.FromDatetime(ts)

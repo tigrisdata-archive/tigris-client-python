@@ -11,6 +11,7 @@ def str_to_bytes(doc_str: str) -> bytes:
     return doc_str.encode("utf-8")
 
 
+# todo: add date serialization tests
 def marshal(doc: object) -> bytes:
     return str_to_bytes(obj_to_str(doc))
 
@@ -23,6 +24,7 @@ def str_to_obj(doc_str: str) -> object:
     return json.loads(doc_str)
 
 
+# todo: add date deserialization tests
 def unmarshal(b: bytes) -> Union[object, dict]:
     return str_to_obj(bytes_to_str(b))
 

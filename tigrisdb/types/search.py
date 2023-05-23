@@ -33,7 +33,7 @@ class FacetSize(Serializable):
     field: str
     size: int = 10
 
-    def as_obj(self):
+    def query(self):
         return {"size": self.size, "type": "value"}
 
 
@@ -45,7 +45,7 @@ class VectorField(Serializable):
     field: str
     vector: List[float]
 
-    def as_obj(self):
+    def query(self):
         return {self.field: self.vector}
 
 
@@ -67,24 +67,24 @@ class Query:
         if self.search_fields:
             req.search_fields.extend(self.search_fields)
         if self.vector_query:
-            req.vector = marshal(self.vector_query.as_obj())
+            req.vector = marshal(self.vector_query.query())
         if self.facet_by:
             f = {}
             if isinstance(self.facet_by, str):
-                f[self.facet_by] = FacetSize(self.facet_by).as_obj()
+                f[self.facet_by] = FacetSize(self.facet_by).query()
             elif isinstance(self.facet_by, list):
                 for facet in self.facet_by:
                     if isinstance(facet, str):
-                        f[facet] = FacetSize(facet).as_obj()
+                        f[facet] = FacetSize(facet).query()
                     elif isinstance(facet, FacetSize):
-                        f[facet.field] = facet.as_obj()
+                        f[facet.field] = facet.query()
             req.facet = marshal(f)
         if self.sort_by:
             order = []
             if isinstance(self.sort_by, Sort):
-                order.append(self.sort_by.as_obj())
+                order.append(self.sort_by.query())
             elif isinstance(self.sort_by, list):
-                order = [s.as_obj() for s in self.sort_by]
+                order = [s.query() for s in self.sort_by]
             req.sort = marshal(order)
         if self.group_by:
             g = [self.group_by] if isinstance(self.group_by, str) else self.group_by

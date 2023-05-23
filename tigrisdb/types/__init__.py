@@ -21,5 +21,12 @@ RFC3339_format = "%Y-%m-%dT%H:%M:%S%z"
 
 class Serializable(abc.ABC):
     @abc.abstractmethod
-    def as_obj(self) -> Dict:
+    def query(self) -> Dict:
+        raise NotImplementedError()
+
+
+class BaseOperator(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def operator(self):
         raise NotImplementedError()
