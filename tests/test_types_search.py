@@ -20,7 +20,8 @@ from api.generated.server.v1.search_pb2 import (
     SearchIndexResponse as ProtoSearchIndexResponse,
 )
 from tigrisdb.errors import TigrisException
-from tigrisdb.types import RFC3339_format, sort
+from tigrisdb.types import sort
+from tigrisdb.types.filters import LT, And, Eq
 from tigrisdb.types.search import (
     DocMeta,
     DocStatus,
@@ -48,6 +49,7 @@ class SearchQueryTest(TestCase):
         self.assertEqual(proto_req.q, "")
         self.assertEqual(proto_req.search_fields, [])
         self.assertEqual(proto_req.vector, bytearray())
+        self.assertEqual(proto_req.filter, bytearray())
         self.assertEqual(proto_req.facet, bytearray())
         self.assertEqual(proto_req.sort, bytearray())
         self.assertEqual(proto_req.group_by, bytearray())
@@ -79,6 +81,25 @@ class SearchQueryTest(TestCase):
 
         self.assertEqual(
             '{"embedding": [1.1, 2.456, 34.88]}'.encode(), proto_req.vector
+        )
+
+    def test_with_filter_by(self):
+        query, proto_req = (
+            Query(
+                filter_by=And(
+                    Eq("name", "Alex"),
+                    LT("dob", datetime.fromisoformat("2023-05-05T10:00:00+00:00")),
+                )
+            ),
+            SearchIndexRequest(),
+        )
+        query.__build__(proto_req)
+        self.assertEqual(
+            '{"$and": ['
+            '{"name": "Alex"}, '
+            '{"dob": {"$lt": "2023-05-05T10:00:00+00:00"}}'
+            "]}".encode(),
+            proto_req.filter,
         )
 
     def test_with_facet_by(self):
@@ -200,7 +221,7 @@ class SearchResultTestCase(TestCase):
 
     def test_build_doc_meta(self):
         ts, proto_ts = (
-            datetime.strptime("2023-05-05T10:00:00+00:00", RFC3339_format),
+            datetime.fromisoformat("2023-05-05T10:00:00+00:00"),
             ProtoTimestamp(),
         )
         proto_ts.FromDatetime(ts)

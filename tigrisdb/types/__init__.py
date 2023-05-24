@@ -2,6 +2,8 @@ import abc
 from dataclasses import dataclass
 from typing import Dict, Optional, Type
 
+Document: Type[dict] = Dict
+
 
 @dataclass
 class ClientConfig:
@@ -10,13 +12,6 @@ class ClientConfig:
     client_secret: Optional[str] = None
     branch: str = ""
     server_url: str = "localhost:8081"
-
-
-Document: Type[dict] = Dict
-RFC3339_format = "%Y-%m-%dT%H:%M:%S%z"
-
-
-# todo: shorten import paths
 
 
 class Serializable(abc.ABC):

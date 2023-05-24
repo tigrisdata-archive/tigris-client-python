@@ -20,6 +20,7 @@ from api.generated.server.v1.search_pb2 import (
 )
 from tigrisdb.errors import TigrisException
 from tigrisdb.types import Document, Serializable
+from tigrisdb.types.filters import Filter
 from tigrisdb.types.sort import Sort
 from tigrisdb.utils import marshal, unmarshal
 
@@ -55,6 +56,7 @@ class Query:
     q: str = ""
     search_fields: List[str] = field(default_factory=list)
     vector_query: VectorField = None
+    filter_by: Optional[Filter] = None
     facet_by: Union[str, List[FacetField]] = field(default_factory=list)
     sort_by: Union[Sort, List[Sort]] = field(default_factory=list)
     group_by: Union[str, List[str]] = field(default_factory=list)
@@ -68,6 +70,8 @@ class Query:
             req.search_fields.extend(self.search_fields)
         if self.vector_query:
             req.vector = marshal(self.vector_query.query())
+        if self.filter_by:
+            req.filter = marshal(self.filter_by.query())
         if self.facet_by:
             f = {}
             if isinstance(self.facet_by, str):
