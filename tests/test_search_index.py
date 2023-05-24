@@ -204,9 +204,7 @@ class SearchIndexTest(TestCase):
             {"id": "2", "title": "reliable systems 🙏", "tags": ["it"]},
         ]
         ts, proto_ts = (
-            datetime.datetime.strptime(
-                "2023-05-05T10:00:00+00:00", "%Y-%m-%dT%H:%M:%S%z"
-            ),
+            datetime.datetime.fromisoformat("2023-05-05T10:00:00+00:00"),
             ProtoTimestamp(),
         )
         proto_ts.FromDatetime(ts)

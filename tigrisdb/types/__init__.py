@@ -2,6 +2,8 @@ import abc
 from dataclasses import dataclass
 from typing import Dict, Optional, Type
 
+Document: Type[dict] = Dict
+
 
 @dataclass
 class ClientConfig:
@@ -12,14 +14,14 @@ class ClientConfig:
     server_url: str = "localhost:8081"
 
 
-Document: Type[dict] = Dict
-RFC3339_format = "%Y-%m-%dT%H:%M:%S%z"
-
-
-# todo: shorten import paths
-
-
 class Serializable(abc.ABC):
     @abc.abstractmethod
-    def as_obj(self) -> Dict:
+    def query(self) -> Dict:
+        raise NotImplementedError()
+
+
+class BaseOperator(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def operator(self):
         raise NotImplementedError()

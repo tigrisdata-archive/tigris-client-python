@@ -53,7 +53,7 @@ def generate():
         "from server.v1": "from {rp}server.v1",
     }
     replace_targets = []
-    for subdir, dirs, files in os.walk(GENERATED_PROTO_DIR):
+    for subdir, _dirs, files in os.walk(GENERATED_PROTO_DIR):
         for f in files:
             if "pb2" in f and (f.endswith(".py") or f.endswith(".pyi")):
                 fp = os.path.join(subdir, f)

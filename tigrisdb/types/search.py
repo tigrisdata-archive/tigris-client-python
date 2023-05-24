@@ -20,6 +20,7 @@ from api.generated.server.v1.search_pb2 import (
 )
 from tigrisdb.errors import TigrisException
 from tigrisdb.types import Document, Serializable
+from tigrisdb.types.filters import Filter
 from tigrisdb.types.sort import Sort
 from tigrisdb.utils import marshal, unmarshal
 
@@ -33,7 +34,7 @@ class FacetSize(Serializable):
     field: str
     size: int = 10
 
-    def as_obj(self):
+    def query(self):
         return {"size": self.size, "type": "value"}
 
 
@@ -45,7 +46,7 @@ class VectorField(Serializable):
     field: str
     vector: List[float]
 
-    def as_obj(self):
+    def query(self):
         return {self.field: self.vector}
 
 
@@ -55,6 +56,7 @@ class Query:
     q: str = ""
     search_fields: List[str] = field(default_factory=list)
     vector_query: VectorField = None
+    filter_by: Optional[Filter] = None
     facet_by: Union[str, List[FacetField]] = field(default_factory=list)
     sort_by: Union[Sort, List[Sort]] = field(default_factory=list)
     group_by: Union[str, List[str]] = field(default_factory=list)
@@ -67,24 +69,26 @@ class Query:
         if self.search_fields:
             req.search_fields.extend(self.search_fields)
         if self.vector_query:
-            req.vector = marshal(self.vector_query.as_obj())
+            req.vector = marshal(self.vector_query.query())
+        if self.filter_by:
+            req.filter = marshal(self.filter_by.query())
         if self.facet_by:
             f = {}
             if isinstance(self.facet_by, str):
-                f[self.facet_by] = FacetSize(self.facet_by).as_obj()
+                f[self.facet_by] = FacetSize(self.facet_by).query()
             elif isinstance(self.facet_by, list):
                 for facet in self.facet_by:
                     if isinstance(facet, str):
-                        f[facet] = FacetSize(facet).as_obj()
+                        f[facet] = FacetSize(facet).query()
                     elif isinstance(facet, FacetSize):
-                        f[facet.field] = facet.as_obj()
+                        f[facet.field] = facet.query()
             req.facet = marshal(f)
         if self.sort_by:
             order = []
             if isinstance(self.sort_by, Sort):
-                order.append(self.sort_by.as_obj())
+                order.append(self.sort_by.query())
             elif isinstance(self.sort_by, list):
-                order = [s.as_obj() for s in self.sort_by]
+                order = [s.query() for s in self.sort_by]
             req.sort = marshal(order)
         if self.group_by:
             g = [self.group_by] if isinstance(self.group_by, str) else self.group_by
