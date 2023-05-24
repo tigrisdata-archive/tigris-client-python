@@ -49,3 +49,6 @@ class Search:
             raise TigrisServerError("failed to delete search index", e)
 
         return resp.status == "deleted"
+
+    def get_index(self, name: str) -> SearchIndex:
+        return SearchIndex(index_name=name, client=self.__client, config=self.__config)
