@@ -1,10 +1,18 @@
 import base64
+import datetime
 import json
-from typing import Union
+from typing import Any, Union
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj: Any) -> Any:
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(obj)
 
 
 def obj_to_str(doc: object) -> str:
-    return json.dumps(doc)
+    return json.dumps(doc, cls=CustomJSONEncoder)
 
 
 def str_to_bytes(doc_str: str) -> bytes:

@@ -1,7 +1,6 @@
 import datetime
 from unittest import TestCase
 
-from tigrisdb.types import RFC3339_format
 from tigrisdb.types.filters import GT, GTE, LT, LTE, Contains, Eq, Not, Regex
 
 
@@ -15,7 +14,7 @@ class SelectorTestCase(TestCase):
         self.assertEqual({"f1": {"$gte": 25}}, f.query())
 
     def test_gt(self):
-        dt = datetime.datetime.strptime("2023-05-05T10:00:00+00:00", RFC3339_format)
+        dt = datetime.datetime.fromisoformat("2023-05-05T10:00:00+00:00")
         f = GT("f1", dt)
         self.assertEqual({"f1": {"$gt": dt}}, f.query())
 
