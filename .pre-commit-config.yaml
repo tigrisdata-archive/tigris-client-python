@@ -1,32 +1,33 @@
 minimum_pre_commit_version: 3.3.0
-default_stages: [commit, push, manual]
+default_stages: [ commit, push, manual ]
 repos:
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
       - id: black
-        args: [--line-length=88]
+        args: [ --line-length=88 ]
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        args: [--profile=black, --filter-files]
+        args: [ --profile=black, --filter-files ]
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
-        args: [--max-line-length=88]
+        args: [ --max-line-length=88 ]
         additional_dependencies: [
-          pep8-naming==0.13.3
+          pep8-naming==0.13.3,
+          flake8-bugbear==23.5.9
         ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
       - id: check-added-large-files
-        args: [--maxkb=800]
+        args: [ --maxkb=800 ]
       - id: debug-statements
       - id: detect-aws-credentials
-        args: [--allow-missing-credentials]
+        args: [ --allow-missing-credentials ]
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: forbid-new-submodules
