@@ -1,3 +1,5 @@
+from typing import cast
+
 import grpc
 
 
@@ -17,4 +19,13 @@ class TigrisException(Exception):
 # TODO: make this typesafe
 class TigrisServerError(TigrisException):
     def __init__(self, msg: str, e: grpc.RpcError):
-        super(TigrisServerError, self).__init__(msg, code=e.code(), details=e.details())
+        if isinstance(e.code(), grpc.StatusCode):
+            self.code = cast(grpc.StatusCode, e.code())
+        else:
+            self.code = grpc.StatusCode.UNKNOWN
+
+        self.details = e.details()
+        super(TigrisServerError, self).__init__(
+            msg, code=self.code.name, details=self.details
+        )
+        self.__suppress_context__ = True
