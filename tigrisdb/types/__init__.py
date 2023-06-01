@@ -11,7 +11,7 @@ class ClientConfig:
     client_id: Optional[str] = None
     client_secret: Optional[str] = None
     branch: str = ""
-    server_url: str = "localhost:8081"
+    server_url: str = ""
 
 
 class Serializable(abc.ABC):
