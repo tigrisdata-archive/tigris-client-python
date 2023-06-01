@@ -10,7 +10,8 @@ pip install tigrisdb
 
 # Usage
 
-See reference implementation in `./tests` directory that uses Tigris on `localhost:8081`
+Vector Search - https://www.tigrisdata.com/docs/concepts/vector-search/python/
+
 
 # Development
 
