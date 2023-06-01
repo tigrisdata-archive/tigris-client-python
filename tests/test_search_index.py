@@ -17,7 +17,7 @@ from api.generated.server.v1.search_pb2 import (
     SearchIndexResponse,
     UpdateDocumentResponse,
 )
-from tests import StubRpcError
+from tests import UnavailableRpcError
 from tigrisdb.errors import TigrisServerError
 from tigrisdb.search_index import SearchIndex
 from tigrisdb.types import ClientConfig, Document
@@ -54,9 +54,7 @@ class SearchIndexTest(TestCase):
     def test_search_with_error(self, grpc_search):
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.Search.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
-        )
+        mock_grpc.Search.side_effect = UnavailableRpcError("operational failure")
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
             search_index.search(SearchQuery())
         self.assertIsNotNone(e)
@@ -88,9 +86,7 @@ class SearchIndexTest(TestCase):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.Create.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
-        )
+        mock_grpc.Create.side_effect = UnavailableRpcError("operational failure")
 
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
             search_index.create_many(docs)
@@ -132,9 +128,7 @@ class SearchIndexTest(TestCase):
     def test_delete_many_with_error(self, grpc_search):
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.Delete.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
-        )
+        mock_grpc.Delete.side_effect = UnavailableRpcError("operational failure")
 
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
             search_index.delete_many(["id"])
@@ -178,8 +172,8 @@ class SearchIndexTest(TestCase):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.CreateOrReplace.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
+        mock_grpc.CreateOrReplace.side_effect = UnavailableRpcError(
+            "operational failure"
         )
 
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
@@ -242,9 +236,7 @@ class SearchIndexTest(TestCase):
     def test_get_many_with_error(self, grpc_search):
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.Get.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
-        )
+        mock_grpc.Get.side_effect = UnavailableRpcError("operational failure")
 
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
             search_index.get_many(["id"])
@@ -288,9 +280,7 @@ class SearchIndexTest(TestCase):
         docs = [{"id": 1, "name": "shoe"}, {"id": 2, "name": "jacket"}]
         search_index = SearchIndex(self.index_name, grpc_search(), self.client_config)
         mock_grpc = grpc_search()
-        mock_grpc.Update.side_effect = StubRpcError(
-            code="Unavailable", details="operational failure"
-        )
+        mock_grpc.Update.side_effect = UnavailableRpcError("operational failure")
 
         with self.assertRaisesRegex(TigrisServerError, "operational failure") as e:
             search_index.update_many(docs)

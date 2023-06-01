@@ -4,7 +4,7 @@ import grpc
 
 
 class StubRpcError(grpc.RpcError):
-    def __init__(self, code: str, details: Optional[str]):
+    def __init__(self, code: grpc.StatusCode, details: Optional[str]):
         self._code = code
         self._details = details
 
@@ -13,3 +13,13 @@ class StubRpcError(grpc.RpcError):
 
     def details(self):
         return self._details
+
+
+class UnavailableRpcError(StubRpcError):
+    def __init__(self, details: Optional[str]):
+        super().__init__(grpc.StatusCode.UNAVAILABLE, details)
+
+
+class NotFoundRpcError(StubRpcError):
+    def __init__(self, details: Optional[str]):
+        super().__init__(grpc.StatusCode.NOT_FOUND, details)

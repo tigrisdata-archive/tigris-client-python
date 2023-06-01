@@ -52,7 +52,7 @@ class AuthGatewayTest(TestCase):
         channel_ready_future.return_value = self.done_future
         mock_grpc_auth = grpc_auth()
         mock_grpc_auth.GetAccessToken.side_effect = StubRpcError(
-            code="Unavailable", details=""
+            code=grpc.StatusCode.UNAVAILABLE, details=""
         )
 
         auth_gateway = AuthGateway(self.client_config)
