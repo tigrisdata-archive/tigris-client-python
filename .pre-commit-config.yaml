@@ -20,6 +20,12 @@ repos:
           pep8-naming==0.13.3,
           flake8-bugbear==23.5.9
         ]
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.7.1
+    hooks:
+      - id: docformatter
+        additional_dependencies: [ tomli ]
+        args: [ --in-place, --black ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:

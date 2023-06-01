@@ -26,13 +26,23 @@ class TigrisClient(object):
             config = ClientConfig()
         self.__config = config
         if not config.server_url:
-            config.server_url = TigrisClient.__LOCAL_SERVER
+            config.server_url = os.getenv("TIGRIS_URI", TigrisClient.__LOCAL_SERVER)
         if config.server_url.startswith("https://"):
             config.server_url = config.server_url.replace("https://", "")
         if config.server_url.startswith("http://"):
             config.server_url = config.server_url.replace("http://", "")
         if ":" not in config.server_url:
             config.server_url = f"{config.server_url}:443"
+
+        # initialize rest of config
+        if not config.project_name:
+            config.project_name = os.getenv("TIGRIS_PROJECT")
+        if not config.client_id:
+            config.client_id = os.getenv("TIGRIS_CLIENT_ID")
+        if not config.client_secret:
+            config.client_secret = os.getenv("TIGRIS_CLIENT_SECRET")
+        if not config.branch:
+            config.branch = os.getenv("TIGRIS_DB_BRANCH", "")
 
         is_local_dev = any(
             map(

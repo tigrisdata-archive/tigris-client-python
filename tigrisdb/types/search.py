@@ -50,7 +50,6 @@ class VectorField(Serializable):
         return {self.field: self.vector}
 
 
-# TODO: add filter, collation
 @dataclass
 class Query:
     q: str = ""

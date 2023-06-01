@@ -7,7 +7,7 @@ Document: Type[dict] = Dict
 
 @dataclass
 class ClientConfig:
-    project_name: str
+    project_name: str = ""
     client_id: Optional[str] = None
     client_secret: Optional[str] = None
     branch: str = ""
