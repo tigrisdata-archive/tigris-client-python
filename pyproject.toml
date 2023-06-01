@@ -27,6 +27,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.0"
 coverage = { version = "^7.2.5", extras = ["toml"] }
+tomli = "^2.0.1"
 
 [tool.poetry.scripts]
 make = "scripts.proto:main"
