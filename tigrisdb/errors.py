@@ -4,9 +4,7 @@ import grpc
 
 
 class TigrisException(Exception):
-    """
-    Base class for all TigrisExceptions
-    """
+    """Base class for all TigrisExceptions."""
 
     msg: str
 
