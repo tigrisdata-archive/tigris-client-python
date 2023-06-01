@@ -19,7 +19,7 @@ include = ["api/generated/**/*"]
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 protobuf = "^4.22.3"
-grpcio-tools = "^1.54.0"
+grpcio-tools = ">=1.46.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -27,6 +27,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.0"
 coverage = { version = "^7.2.5", extras = ["toml"] }
+tomli = "^2.0.1"
 
 [tool.poetry.scripts]
 make = "scripts.proto:main"
@@ -37,7 +38,7 @@ branch = true
 command_line = "-m unittest discover -s tests -p 'test_*.py'"
 
 [tool.coverage.report]
-fail_under = 70
+fail_under = 90
 
 [build-system]
 requires = ["poetry-core"]

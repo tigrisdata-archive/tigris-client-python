@@ -19,7 +19,7 @@ class TigrisClient(object):
     __search_client: SearchStub
     __config: ClientConfig
 
-    def __init__(self, config: Optional[ClientConfig]):
+    def __init__(self, config: Optional[ClientConfig] = None):
         os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
         if not config:
@@ -69,6 +69,10 @@ class TigrisClient(object):
 
         self.__tigris_client = TigrisStub(channel)
         self.__search_client = SearchStub(channel)
+
+    @property
+    def config(self):
+        return self.__config
 
     def get_db(self):
         return Database(self.__tigris_client, self.__config)
