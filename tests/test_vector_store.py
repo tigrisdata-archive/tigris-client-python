@@ -28,12 +28,6 @@ class VectorStoreTest(TestCase):
     def setUp(self) -> None:
         self.mock_index = Mock(spec=SearchIndex)
         self.mock_client = Mock(spec=Search)
-        # with patch("tigrisdb.client.TigrisClient.__new__") as mock_tigris:
-        #     instance = MagicMock()
-        #     mock_tigris.return_value = instance
-        #     instance.get_search.return_value = self.mock_client
-        #     self.mock_client.get_index.return_value = self.mock_index
-        #     self.store = VectorStore("my_vectors")
         self.mock_client.get_index.return_value = self.mock_index
         self.store = VectorStore(self.mock_client, "my_vectors")
 

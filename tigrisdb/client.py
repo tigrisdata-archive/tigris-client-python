@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Union
 
 import grpc
 
@@ -14,37 +14,34 @@ from tigrisdb.vector_store import VectorStore
 
 
 class TigrisClient(object):
-    __LOCAL_SERVER = "localhost:8081"
+    __PREVIEW_URI = "api.preview.tigrisdata.cloud"
 
     __tigris_client: TigrisStub
     __search_client: SearchStub
     __config: ClientConfig
 
-    # TODO: Change client config to be a dict
-    def __init__(self, config: Optional[ClientConfig] = None):
+    def __init__(self, conf: Union[ClientConfig, dict, None] = None):
         os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
-        if not config:
+        if not conf:
             config = ClientConfig()
+        elif isinstance(conf, dict):
+            config = ClientConfig()
+            config.project_name = conf.get("project", config.project_name)
+            config.server_url = conf.get("server_url", config.server_url)
+            config.client_id = conf.get("client_id", config.client_id)
+            config.client_secret = conf.get("client_secret", config.client_secret)
+            config.branch = conf.get("branch", config.branch)
+        else:
+            config = conf
+
         self.__config = config
-        if not config.server_url:
-            config.server_url = os.getenv("TIGRIS_URI", TigrisClient.__LOCAL_SERVER)
         if config.server_url.startswith("https://"):
             config.server_url = config.server_url.replace("https://", "")
         if config.server_url.startswith("http://"):
             config.server_url = config.server_url.replace("http://", "")
         if ":" not in config.server_url:
             config.server_url = f"{config.server_url}:443"
-
-        # initialize rest of config
-        if not config.project_name:
-            config.project_name = os.getenv("TIGRIS_PROJECT")
-        if not config.client_id:
-            config.client_id = os.getenv("TIGRIS_CLIENT_ID")
-        if not config.client_secret:
-            config.client_secret = os.getenv("TIGRIS_CLIENT_SECRET")
-        if not config.branch:
-            config.branch = os.getenv("TIGRIS_DB_BRANCH", "")
 
         is_local_dev = any(
             map(
@@ -54,8 +51,10 @@ class TigrisClient(object):
         )
 
         if is_local_dev:
+            config.validate()
             channel = grpc.insecure_channel(config.server_url)
         else:
+            config.validate(with_creds=True)
             auth_gtwy = AuthGateway(config)
             channel_creds = grpc.ssl_channel_credentials()
             call_creds = grpc.metadata_call_credentials(auth_gtwy, name="auth gateway")
