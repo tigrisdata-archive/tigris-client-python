@@ -27,15 +27,10 @@ class TigrisClient(object):
             config = ClientConfig()
         elif isinstance(conf, dict):
             config = ClientConfig()
-            config.project_name = conf.get("project", config.project_name)
-            config.server_url = conf.get("server_url", config.server_url)
-            config.client_id = conf.get("client_id", config.client_id)
-            config.client_secret = conf.get("client_secret", config.client_secret)
-            config.branch = conf.get("branch", config.branch)
+            config.merge(**conf)
         else:
             config = conf
 
-        self.__config = config
         if config.server_url.startswith("https://"):
             config.server_url = config.server_url.replace("https://", "")
         if config.server_url.startswith("http://"):
@@ -43,18 +38,10 @@ class TigrisClient(object):
         if ":" not in config.server_url:
             config.server_url = f"{config.server_url}:443"
 
-        is_local_dev = any(
-            map(
-                lambda k: k in config.server_url,
-                ["localhost", "127.0.0.1", "tigrisdb-local-server:", "[::1]"],
-            )
-        )
-
-        if is_local_dev:
-            config.validate()
+        config.validate()
+        if config.is_local_dev():
             channel = grpc.insecure_channel(config.server_url)
         else:
-            config.validate(with_creds=True)
             auth_gtwy = AuthGateway(config)
             channel_creds = grpc.ssl_channel_credentials()
             call_creds = grpc.metadata_call_credentials(auth_gtwy, name="auth gateway")
@@ -68,6 +55,7 @@ class TigrisClient(object):
         except grpc.FutureTimeoutError:
             raise TigrisException(f"Connection timed out {config.server_url}")
 
+        self.__config = config
         self.__tigris_client = TigrisStub(channel)
         self._database = Database(self.__tigris_client, self.__config)
         self.__search_client = SearchStub(channel)

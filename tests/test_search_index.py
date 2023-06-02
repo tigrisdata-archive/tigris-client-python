@@ -28,9 +28,7 @@ from tigrisdb.utils import marshal, unmarshal
 @patch("api.generated.server.v1.search_pb2_grpc.SearchStub")
 class SearchIndexTest(TestCase):
     def setUp(self) -> None:
-        self.client_config = ClientConfig(
-            server_url="localhost:5000", project_name="db1"
-        )
+        self.client_config = ClientConfig(server_url="localhost:5000", project="db1")
         self.index_name = "catalog"
 
     def test_search(self, grpc_search):

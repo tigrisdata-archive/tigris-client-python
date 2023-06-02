@@ -23,7 +23,7 @@ class Database:
 
     @property
     def project(self):
-        return self.__config.project_name
+        return self.__config.project
 
     @property
     def branch(self):

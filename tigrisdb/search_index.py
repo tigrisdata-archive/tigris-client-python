@@ -37,7 +37,7 @@ class SearchIndex:
 
     @property
     def project(self):
-        return self.__config.project_name
+        return self.__config.project
 
     @property
     def name(self):
