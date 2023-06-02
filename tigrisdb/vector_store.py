@@ -2,17 +2,16 @@ from typing import List, Optional
 
 import grpc
 
-from tigrisdb.client import TigrisClient
 from tigrisdb.errors import TigrisServerError
-from tigrisdb.types import ClientConfig
+from tigrisdb.search import Search
 from tigrisdb.types.filters import Filter
 from tigrisdb.types.search import DocStatus, IndexedDoc, Query, Result, VectorField
 from tigrisdb.types.vector import Document, DocWithScore
 
 
 class VectorStore:
-    def __init__(self, name: str, config: Optional[ClientConfig] = None):
-        self.client = TigrisClient(config).get_search()
+    def __init__(self, client: Search, name: str):
+        self.client = client
         self._index_name = name
         self.index = self.client.get_index(name)
 
