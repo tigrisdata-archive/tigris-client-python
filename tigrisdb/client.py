@@ -10,6 +10,7 @@ from tigrisdb.database import Database
 from tigrisdb.errors import TigrisException
 from tigrisdb.search import Search
 from tigrisdb.types import ClientConfig
+from tigrisdb.vector_store import VectorStore
 
 
 class TigrisClient(object):
@@ -19,6 +20,7 @@ class TigrisClient(object):
     __search_client: SearchStub
     __config: ClientConfig
 
+    # TODO: Change client config to be a dict
     def __init__(self, config: Optional[ClientConfig] = None):
         os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
@@ -68,14 +70,19 @@ class TigrisClient(object):
             raise TigrisException(f"Connection timed out {config.server_url}")
 
         self.__tigris_client = TigrisStub(channel)
+        self._database = Database(self.__tigris_client, self.__config)
         self.__search_client = SearchStub(channel)
+        self._search = Search(self.__search_client, self.__config)
 
     @property
     def config(self):
         return self.__config
 
-    def get_db(self):
-        return Database(self.__tigris_client, self.__config)
+    def get_db(self) -> Database:
+        return self._database
 
-    def get_search(self):
-        return Search(self.__search_client, self.__config)
+    def get_search(self) -> Search:
+        return self._search
+
+    def get_vector_store(self, name: str) -> VectorStore:
+        return VectorStore(self._search, name)
