@@ -1,5 +1,5 @@
 from dataclasses import InitVar, dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Dict, List, Optional, Union
 
 from api.generated.server.v1.api_pb2 import FacetCount as ProtoFacetCount
@@ -22,7 +22,7 @@ from tigrisdb.errors import TigrisException
 from tigrisdb.types import Document, Serializable
 from tigrisdb.types.filters import Filter
 from tigrisdb.types.sort import Sort
-from tigrisdb.utils import marshal, unmarshal
+from tigrisdb.utils import datetime_from_proto_ts, marshal, unmarshal
 
 dataclass_default_proto_field = field(
     default=None, repr=False, compare=False, hash=False
@@ -142,9 +142,9 @@ class DocMeta:
     def __post_init__(self, _p: ProtoSearchHitMeta):
         if _p:
             if _p.HasField("created_at"):
-                self.created_at = _p.created_at.ToDatetime(tzinfo=timezone.utc)
+                self.created_at = datetime_from_proto_ts(_p.created_at)
             if _p.HasField("updated_at"):
-                self.updated_at = _p.updated_at.ToDatetime(tzinfo=timezone.utc)
+                self.updated_at = datetime_from_proto_ts(_p.updated_at)
             if _p.HasField("match"):
                 self.text_match = TextMatchInfo(_p=_p.match)
 

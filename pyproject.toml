@@ -18,7 +18,7 @@ include = ["api/generated/**/*"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-protobuf = "^4.22.3"
+protobuf = ">=3.19.6"
 grpcio-tools = ">=1.46.0"
 
 [tool.poetry.group.dev]

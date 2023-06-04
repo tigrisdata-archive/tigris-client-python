@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import Mock, call
 
 from tests import NotFoundRpcError
 from tigrisdb.errors import TigrisServerError
@@ -28,12 +28,8 @@ class VectorStoreTest(TestCase):
     def setUp(self) -> None:
         self.mock_index = Mock(spec=SearchIndex)
         self.mock_client = Mock(spec=Search)
-        with patch("tigrisdb.client.TigrisClient.__new__") as mock_tigris:
-            instance = MagicMock()
-            mock_tigris.return_value = instance
-            instance.get_search.return_value = self.mock_client
-            self.mock_client.get_index.return_value = self.mock_index
-            self.store = VectorStore("my_vectors")
+        self.mock_client.get_index.return_value = self.mock_index
+        self.store = VectorStore(self.mock_client, "my_vectors")
 
     def test_add_documents_when_index_not_found(self):
         # throw error on first call and succeed on second

@@ -21,9 +21,7 @@ from tigrisdb.utils import obj_to_b64
 class AuthGatewayTest(TestCase):
     def setUp(self) -> None:
         self.done_future = MagicMock(grpc.Future)
-        self.client_config = ClientConfig(
-            server_url="localhost:5000", project_name="db1"
-        )
+        self.client_config = ClientConfig(server_url="localhost:5000", project="db1")
 
     def test_get_access_token_with_valid_token_refresh_window(
         self, channel_ready_future, grpc_auth

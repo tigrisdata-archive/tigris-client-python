@@ -3,6 +3,8 @@ import datetime
 import json
 from typing import Any, Union
 
+from google.protobuf.timestamp_pb2 import Timestamp as ProtoTimestamp
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj: Any) -> Any:
@@ -47,3 +49,11 @@ def obj_to_b64(doc: object) -> str:
 
 def schema_to_bytes(schema: dict) -> bytes:
     return marshal(schema)
+
+
+_UTC_ZERO = datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
+
+
+def datetime_from_proto_ts(p: ProtoTimestamp):
+    delta = datetime.timedelta(seconds=p.seconds, microseconds=p.nanos // 1000)
+    return _UTC_ZERO.astimezone(tz=datetime.timezone.utc) + delta
