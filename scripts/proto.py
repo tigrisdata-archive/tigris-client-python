@@ -40,8 +40,8 @@ def generate():
     for proto_file in proto_sources:
         cmd_run(
             f"python -m grpc_tools.protoc --proto_path={PROTO_ROOT}"
-            f" --python_out={GENERATED_PROTO_DIR} --pyi_out={GENERATED_PROTO_DIR} "
-            f"--grpc_python_out={GENERATED_PROTO_DIR} {proto_file}",
+            f" --python_out={GENERATED_PROTO_DIR}"
+            f" --grpc_python_out={GENERATED_PROTO_DIR} {proto_file}",
             shell=True,
             check=True,
         )
