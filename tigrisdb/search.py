@@ -23,7 +23,7 @@ class Search:
 
     @property
     def project(self):
-        return self.__config.project_name
+        return self.__config.project
 
     def create_or_update_index(self, name: str, schema: dict) -> SearchIndex:
         req = CreateOrUpdateIndexRequest(
